@@ -52,8 +52,8 @@ for k in np.sort(glob.glob("frames/*.png")):
     Y1 = 125
     Y2 = 425
 
-    DX = X2-X1
-    DY = Y2-Y1
+    DX = X2 - X1
+    DY = Y2 - Y1
 
     points = np.array([[[X1, Y1], [X2, Y1], [X2, Y2], [X1, Y2]]])
 
@@ -63,10 +63,10 @@ for k in np.sort(glob.glob("frames/*.png")):
     rect = cv2.boundingRect(points)  # returns (x,y,w,h) of the rect
     cropped = res[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
 
-    wbg = np.ones_like(img, np.uint8)*255
+    wbg = np.ones_like(img, np.uint8) * 255
     cv2.bitwise_not(wbg, wbg, mask=mask)
 
-    dst = wbg+res
+    dst = wbg + res
 
     # Canny
     edges = cv2.Canny(res, 170, 200)
@@ -97,10 +97,10 @@ for k in np.sort(glob.glob("frames/*.png")):
             edge2 = np.array([np.array([ordered[0][0], ordered[0][1]]), np.array(
                 [ordered[1][0], ordered[1][1]])])
 
-            norm1 = np.sqrt((edge1[0][0]-edge1[1][0]) **
-                            2 + (edge1[0][1]-edge1[1][1])**2)
-            norm2 = np.sqrt((edge2[0][0]-edge2[1][0]) **
-                            2 + (edge2[0][1]-edge2[1][1])**2)
+            norm1 = np.sqrt((edge1[0][0] - edge1[1][0]) **
+                            2 + (edge1[0][1] - edge1[1][1])**2)
+            norm2 = np.sqrt((edge2[0][0] - edge2[1][0]) **
+                            2 + (edge2[0][1] - edge2[1][1])**2)
 
             longedge = np.copy(edge1)
 
@@ -109,21 +109,22 @@ for k in np.sort(glob.glob("frames/*.png")):
                 longedge = edge2
 
             # AR filtering
-            if np.amin(np.array([norm1, norm2]))/np.max(np.array([norm1, norm2])) < 0.1:
+            if np.amin(np.array([norm1, norm2])) / \
+                    np.max(np.array([norm1, norm2])) < 0.1:
 
                 cv2.drawContours(wcanvas, [box], 0, (0, 0, 255), 2)
 
                 # origin to bottom left
                 x1 = longedge[0][0]
-                y1 = DY-longedge[0][1]
+                y1 = DY - longedge[0][1]
 
                 x2 = longedge[1][0]
-                y2 = DY-longedge[1][1]
+                y2 = DY - longedge[1][1]
 
-                angle = 180.0/np.pi*(np.arctan2(y2-y1, x2-x1))
+                angle = 180.0 / np.pi * (np.arctan2(y2 - y1, x2 - x1))
 
                 angles = np.append(angles, angle)
-                sizes = np.append(sizes, rotrect[1][0]*rotrect[1][1])
+                sizes = np.append(sizes, rotrect[1][0] * rotrect[1][1])
 
     if(len(angles) != 0):
         a = angles[np.argmax(sizes)]
@@ -131,12 +132,12 @@ for k in np.sort(glob.glob("frames/*.png")):
         # remove the contours from the image and show the resulting images
         image = cropped
 
-        textimg = "Tilt angle: "+str(np.round(a, 1))+" degrees"
+        textimg = "Tilt angle: " + str(np.round(a, 1)) + " degrees"
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(img, textimg, (50, 50), font,
                     1, (0, 0, 255), 2, cv2.LINE_AA)
 
-        FILENAME = "frame_"+str(ll).zfill(3)+".png"
+        FILENAME = "frame_" + str(ll).zfill(3) + ".png"
 
         ll += 1
 
